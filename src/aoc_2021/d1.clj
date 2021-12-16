@@ -1,4 +1,4 @@
-(ns aoc-2021.d1p1
+(ns aoc-2021.d1
   (:gen-class))
 
 (defn sonar-reducer [{:keys [curr cnt]} n]
@@ -18,8 +18,10 @@
         x2 (-> (drop 1 xs) vec (conj 0))
         x3 (-> (drop 2 xs) vec (conj 0) (conj 0))]
     (->> [x1 x2 x3]
-         interleave
-         (partition 3))))
+         (apply interleave)
+         (partition 3)
+         (map #(apply + %))
+         sonar)))
 
 (defn -main
   "Apply sonar funtion to input"
