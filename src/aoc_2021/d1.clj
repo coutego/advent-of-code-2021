@@ -1,29 +1,10 @@
-(ns aoc-2021.d1
-  (:gen-class))
+(ns aoc-2021.d1)
 
-(defn sonar-reducer [{:keys [curr cnt]} n]
-  {:curr n :cnt (if (> n curr)
-                  (inc cnt)
-                  cnt)})
-
-(defn sonar [xs]
-  (-> (reduce sonar-reducer
-              {:curr (apply max xs)
-               :cnt 0}
-              xs)
-      :cnt))
-
-(defn sliding-sonar [xs]
-  (let [x1 xs
-        x2 (-> (drop 1 xs) vec (conj 0))
-        x3 (-> (drop 2 xs) vec (conj 0) (conj 0))]
-    (->> [x1 x2 x3]
-         (apply interleave)
-         (partition 3)
-         (map #(apply + %))
-         sonar)))
-
-(defn -main
-  "Apply sonar funtion to input"
-  [& args]
-  (println "Sonar for given input: " (apply sonar args)))
+(defn sonar-win-n
+  "Returns the count of sonar measure increments on input xs for a window of size n.
+  The first case corresponds to a window of size 1 and the second case to a window of size 3.
+  This implementation uses the fact that a + b + c < b + c + d <=> a < d."
+  [xs n]
+  (->> (map < xs (nth (iterate rest xs) n))
+       (filter true?)
+       count))
