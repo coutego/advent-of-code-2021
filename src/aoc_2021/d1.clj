@@ -12,10 +12,7 @@
        (filter true?)
        count))
 
-
 ;;; Day two
-
-;(defn- cmd-mapper [[command qty]])
 
 (defn product [commands]
   (->> commands
