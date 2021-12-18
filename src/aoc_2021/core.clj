@@ -53,7 +53,7 @@
          (map #(Integer/parseInt %))
          (partition ln)
          (map #(/ (apply + %) (count %)))
-         (map #((if most-common? > <) % 1/2))
+         (map #((if most-common? > <=) % 1/2))
          (map #(if % 1 0))
          (reduce #(+ (* 2 %1) %2)))))
 
