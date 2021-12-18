@@ -1,4 +1,4 @@
-(ns aoc-2021.d1
+(ns aoc-2021.core
   (:require [clojure.string :as str]))
 
 ;;; Day one
