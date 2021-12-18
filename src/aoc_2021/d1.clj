@@ -46,3 +46,24 @@
                [0 0 0])
        butlast
        (reduce *)))
+
+
+;;; Day three
+
+(defn- calc [most-common? bnums]
+  (let [bnums (str/split-lines bnums)
+        ln (-> bnums count)]
+    (->> bnums
+         (map vec)
+         (apply interleave)
+         (map str)
+         (map #(Integer/parseInt %))
+         (partition ln)
+         (map #(/ (apply + %) (count %)))
+         (map #((if most-common? > <) % 1/2))
+         (map #(if % 1 0))
+         (reduce #(+ (* 2 %1) %2)))))
+
+(def gamma (partial calc true))
+(def epsilon (partial calc false))
+(defn power [bnums] (* (gamma bnums) (epsilon bnums)))
