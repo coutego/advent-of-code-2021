@@ -1,5 +1,6 @@
 (ns aoc-2021.core
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.set :as set]))
 
 ;;; Day one
 
@@ -11,7 +12,6 @@
   (->> (map < xs (nth (iterate rest xs) n))
        (filter true?)
        count))
-
 
 ;;; Day two
 
@@ -40,7 +40,6 @@
                [0 0 0])
        butlast
        (reduce *)))
-
 
 ;;; Day three
 
@@ -82,14 +81,13 @@
 (defn life-support-rating [bnums]
   (* (oxigen-r bnums) (co2-sc-r bnums)))
 
-
 ;;; Day 4
 
 (defn- d4-read-card [lines card]
   (let [line (str/trim (or (first lines) ""))]
     (if (or (nil? line) (= 0 (count (str/trim line))))
       [(rest lines) card]
-      (recur (rest lines) (conj card (str/split line #" +"))))))
+      (recur (rest lines) (conj card (map #(Integer/parseInt %) (str/split line #" +")))))))
 
 (defn- d4-read-cards [lines cards]
   (cond
@@ -108,9 +106,11 @@
 
 (defn d4-check-card-rows [card nums]
   (let [line (first card)]
-    (if (= 0 (count (clojure.set/difference (set card) (set nums))))
+    (if (= 0 (count (clojure.set/difference (set line) (set nums))))
       true
-      (recur (rest card) nums))))
+      (if (= 0 (count (rest card)))
+        false
+        (recur (rest card) nums)))))
 
 (defn d4-check-card-cols [card nums]
   (d4-check-card-rows (apply mapv vector card) nums))
@@ -119,8 +119,30 @@
   (or (d4-check-card-rows card nums)
       (d4-check-card-cols card nums)))
 
-(defn d4-read-input [s]
+(defn d4-find-winner-card [cards nums rest-nums]
+  (let [card (->> cards
+                  (filter #(d4-check-card % nums))
+                  (first))]
+    (if card
+      [card nums]
+      (if rest-nums
+        (recur cards (conj nums (first rest-nums)) (rest rest-nums))
+        nil))))
+
+(defn d4-score [winner-card nums]
+  (-> winner-card
+      (->> (apply concat))
+      set
+      (clojure.set/difference (set nums))
+      (->> (reduce +))
+      (* (last nums))))
+
+(defn d4-p1-main [s]
   (let [lines (str/split-lines s)
         nums  (str/split (first lines) #",")
-        cards (d4-read-cards (drop 2 lines) [])]
-    cards))
+        nums  (map #(Integer/parseInt %) nums)
+        cards (d4-read-cards (drop 2 lines) [])
+        [winner-card rnums] (d4-find-winner-card cards [] nums)]
+    (if winner-card
+      (d4-score winner-card rnums)
+      nil)))
