@@ -137,12 +137,34 @@
       (->> (reduce +))
       (* (last nums))))
 
-(defn d4-p1-main [s]
+(defn d4-read-input [s]
   (let [lines (str/split-lines s)
         nums  (str/split (first lines) #",")
         nums  (map #(Integer/parseInt %) nums)
-        cards (d4-read-cards (drop 2 lines) [])
+        cards (d4-read-cards (drop 2 lines) [])]
+    [nums cards]))
+
+(defn d4-p1-main [s]
+  (let [[nums cards] (d4-read-input s)
         [winner-card rnums] (d4-find-winner-card cards [] nums)]
     (if winner-card
       (d4-score winner-card rnums)
       nil)))
+
+(defn- d4-find-win [card nums]
+  (loop [cnums [(first nums)]
+         othr   (rest nums)]
+    (if (d4-check-card card cnums)
+      cnums
+      (when (> (count othr) 0)
+        (recur (conj cnums (first othr))
+               (rest othr))))))
+
+(defn d4-p2-main [s]
+  (let [[nums cards] (d4-read-input s)]
+    (->> cards
+         (map #(identity {:card %1 :win (d4-find-win %1 nums)}))
+         (filter :win)
+         (sort-by #(count (:win %)))
+         last
+         ((fn [{:keys [card win]}] (d4-score card win))))))
