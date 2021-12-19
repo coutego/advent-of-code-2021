@@ -81,3 +81,46 @@
 
 (defn life-support-rating [bnums]
   (* (oxigen-r bnums) (co2-sc-r bnums)))
+
+
+;;; Day 4
+
+(defn- d4-read-card [lines card]
+  (let [line (str/trim (or (first lines) ""))]
+    (if (or (nil? line) (= 0 (count (str/trim line))))
+      [(rest lines) card]
+      (recur (rest lines) (conj card (str/split line #" +"))))))
+
+(defn- d4-read-cards [lines cards]
+  (cond
+    (= 0 (count lines))
+    cards
+
+    (= 0 (count (str/trim (first lines))))
+    (recur (rest lines) cards)
+
+    :else
+    (let [[lines card] (d4-read-card lines [])
+          cards        (conj cards card)]
+      (if (= 0 (count lines))
+        cards
+        (recur lines cards)))))
+
+(defn d4-check-card-rows [card nums]
+  (let [line (first card)]
+    (if (= 0 (count (clojure.set/difference (set card) (set nums))))
+      true
+      (recur (rest card) nums))))
+
+(defn d4-check-card-cols [card nums]
+  (d4-check-card-rows (apply mapv vector card) nums))
+
+(defn d4-check-card [card nums]
+  (or (d4-check-card-rows card nums)
+      (d4-check-card-cols card nums)))
+
+(defn d4-read-input [s]
+  (let [lines (str/split-lines s)
+        nums  (str/split (first lines) #",")
+        cards (d4-read-cards (drop 2 lines) [])]
+    cards))
