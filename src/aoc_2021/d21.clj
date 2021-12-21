@@ -1,9 +1,5 @@
 (ns aoc-2021.d21)
 
-(defprotocol IDie
-  (roll [this])
-  (pos [this]))
-
 (defn det-die-create []
   {:rolls 0, :pos 0})
 
