@@ -45,7 +45,7 @@
 
 ;;; part 2
 
-(def die-outcomes (for [i (range 3) j (range 3) k (range 3)] [i j k]))
+(def die-rolls (for [i (range 3) j (range 3) k (range 3)] [i j k]))
 
 (defn apply-roll [g roll]
   (let [val     (+ 3 (reduce + roll))
@@ -74,7 +74,7 @@
        (fn [acc roll]
          (sum-wins acc (calculate-wins (apply-roll game roll))))
        [0 0]
-       die-outcomes)))
+       die-rolls)))
 
 (def calculate-wins (memoize calculate-wins-))
 
