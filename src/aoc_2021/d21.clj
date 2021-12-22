@@ -42,3 +42,45 @@
       (if (>= max-score 1000)
         (* (-> game :die :rolls) (apply min (map :score players)))
         (recur (next-play game))))))
+
+;;; part 2
+
+[{:pos 4 :score 6 :last true}
+ {:pos 8 :score 2 :last false}]
+
+(def die-outcomes (for [i (range 3) j (range 3) k (range 3)] [i j k]))
+
+(defn apply-roll [g roll]
+  (let [val     (+ 3 (reduce + roll))
+        ind     (if (get-in g [0 :last]) 1 0)
+        oth-int (if (= ind 0) 1 0)]
+    (-> g
+        (assoc-in [ind :last] true)
+        (assoc-in [oth-int :last] false)
+        (update-in [ind :pos] #(inc (mod (dec (+ % val)) 10)))
+        (update-in [ind] #(assoc % :score (+ (:score %) (:pos %)))))))
+
+(defn direct-win [g]
+  (cond
+    (< 21 (get-in g [0 :score])) [1 0]
+    (< 21 (get-in g [1 :score])) [0 1]
+    :else nil))
+
+(def nmax (atom 0))
+
+(defn sum-wins [[a1 a2] [b1 b2]]
+  (let [[a b] [(+ a1 b1) (+ a2 b2)]]
+    (when (> (+ a b) @nmax)
+      (reset! nmax (+ a b))
+      (println @nmax))
+    [a b]))
+
+(defn calculate-wins- [game]
+  (or (direct-win game)
+      (reduce
+       (fn [acc roll]
+         (sum-wins acc (calculate-wins (apply-roll game roll))))
+       [0 0]
+       die-outcomes)))
+
+(def calculate-wins (memoize calculate-wins-))
