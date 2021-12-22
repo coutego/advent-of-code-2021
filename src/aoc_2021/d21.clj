@@ -45,9 +45,6 @@
 
 ;;; part 2
 
-[{:pos 4 :score 6 :last true}
- {:pos 8 :score 2 :last false}]
-
 (def die-outcomes (for [i (range 3) j (range 3) k (range 3)] [i j k]))
 
 (defn apply-roll [g roll]
@@ -62,18 +59,14 @@
 
 (defn direct-win [g]
   (cond
-    (< 21 (get-in g [0 :score])) [1 0]
-    (< 21 (get-in g [1 :score])) [0 1]
+    (<= 21 (get-in g [0 :score])) [1 0]
+    (<= 21 (get-in g [1 :score])) [0 1]
     :else nil))
 
 (def nmax (atom 0))
 
 (defn sum-wins [[a1 a2] [b1 b2]]
-  (let [[a b] [(+ a1 b1) (+ a2 b2)]]
-    (when (> (+ a b) @nmax)
-      (reset! nmax (+ a b))
-      (println @nmax))
-    [a b]))
+  [(+ a1 b1) (+ a2 b2)])
 
 (defn calculate-wins- [game]
   (or (direct-win game)
@@ -84,3 +77,6 @@
        die-outcomes)))
 
 (def calculate-wins (memoize calculate-wins-))
+
+(defn game2 [start-a start-b]
+  (max (calculate-wins [{:pos start-a :score 0} {:pos start-b :score 0}])))
