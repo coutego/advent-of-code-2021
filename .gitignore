@@ -11,3 +11,4 @@ pom.xml.asc
 /.prepl-port
 .hgignore
 .hg/
+/src/aoc_2021/.DS_Store
