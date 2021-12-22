@@ -63,10 +63,10 @@
     (<= 21 (get-in g [1 :score])) [0 1]
     :else nil))
 
-(def nmax (atom 0))
-
 (defn sum-wins [[a1 a2] [b1 b2]]
   [(+ a1 b1) (+ a2 b2)])
+
+(declare calculate-wins)
 
 (defn calculate-wins- [game]
   (or (direct-win game)
